@@ -1,0 +1,11 @@
+{
+  "name": "bulletin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "게시판 CRUD 학습 프로젝트",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "mongodb": "^6.3.0"
+  }
+}
