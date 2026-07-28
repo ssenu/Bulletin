@@ -8,8 +8,28 @@
 </head>
 <body>
   <main class="container">
-    <h1>자유게시판</h1>
-    <p>준비 중입니다.</p>
+    <header class="page-header">
+      <h1>자유게시판</h1>
+      <a class="btn btn-primary" href="write.html">글쓰기</a>
+    </header>
+
+    <table class="board">
+      <thead>
+        <tr>
+          <th class="col-no">번호</th>
+          <th class="col-title">제목</th>
+          <th class="col-author">작성자</th>
+          <th class="col-date">날짜</th>
+          <th class="col-views">조회</th>
+        </tr>
+      </thead>
+      <tbody id="post-list"></tbody>
+    </table>
+
+    <p id="status" class="status">불러오는 중...</p>
+    <nav id="pagination" class="pagination"></nav>
   </main>
+
+  <script type="module" src="js/list.js"></script>
 </body>
 </html>

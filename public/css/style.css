@@ -21,3 +21,104 @@ h1 {
   font-size: 24px;
   margin: 0;
 }
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  color: #222;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #f0f0f0;
+}
+
+.btn-primary {
+  background: #2b6cb0;
+  border-color: #2b6cb0;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #245a94;
+}
+
+.board {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-top: 2px solid #444;
+}
+
+.board th,
+.board td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #e5e5e5;
+  text-align: center;
+  font-size: 14px;
+}
+
+.board th {
+  background: #f7f7f7;
+  font-weight: 600;
+}
+
+.board .col-title {
+  text-align: left;
+}
+
+.board .col-no     { width: 70px; }
+.board .col-author { width: 110px; }
+.board .col-date   { width: 90px; }
+.board .col-views  { width: 70px; }
+
+.board a {
+  color: #222;
+  text-decoration: none;
+}
+
+.board a:hover {
+  text-decoration: underline;
+}
+
+.status {
+  padding: 40px 0;
+  text-align: center;
+  color: #888;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 24px;
+}
+
+.page {
+  min-width: 32px;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  color: #444;
+  text-align: center;
+  text-decoration: none;
+}
+
+.page.current {
+  background: #2b6cb0;
+  border-color: #2b6cb0;
+  color: #fff;
+}
