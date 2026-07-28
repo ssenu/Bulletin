@@ -352,23 +352,25 @@ GET /api/posts/68f2a1...                ← edit.html (조회수 그대로)
 
 ```js
 if (req.query.countView === '1') {
-  post = await col.findOneAndUpdate(
-    { _id },
-    { $inc: { views: 1 } },
-    { returnDocument: 'after', projection: { passwordHash: 0 } }
-  );
-} else {
-  post = await col.findOne({ _id }, { projection: { passwordHash: 0 } });
+  // 조회수를 먼저 원자적으로 올린다.
+  const result = await col.updateOne({ _id }, { $inc: { views: 1 } });
+  if (result.matchedCount === 0) return 404;
 }
+
+// 올린 뒤(또는 그냥) 문서를 읽는다.
+const post = await col.findOne({ _id }, { projection: { passwordHash: 0 } });
 ```
 
 `$inc`는 "지금 값이 뭐든 1을 더해라"라는 뜻이다. 값을 읽어와 +1 하고 다시 저장하면 동시에 두 명이 들어왔을 때 하나가 씹힌다. `$inc`는 DB가 원자적으로 처리해 그런 문제가 없다.
 
 참고: 원래 `GET`은 데이터를 바꾸지 않는 것이 HTTP의 약속이지만, 조회수는 그 원칙을 어긴다. 실제 서비스도 겪는 현실적 타협이다.
 
-> **주의 — `findOneAndUpdate`의 반환 형태는 드라이버 버전마다 다르다.**
-> `mongodb` 드라이버 v4/v5는 `result.value`에 문서가 들어 있고, v6부터는 문서를 직접 반환한다.
-> 구현 시 설치된 버전을 확인하고 맞춰야 한다. 안 맞으면 "데이터가 `undefined`"로 나타난다.
+> **`findOneAndUpdate` 한 번으로 처리하지 않는 이유**
+> `findOneAndUpdate`는 올리기와 읽기를 한 번에 하지만, **반환 형태가 드라이버 버전마다 다르다.**
+> `mongodb` v4/v5는 `result.value`에 문서가 들어 있고, v6부터는 문서를 직접 반환한다.
+> 버전이 안 맞으면 "데이터가 `undefined`"로 나타나 원인 찾기가 어렵다.
+> `updateOne` + `findOne` 두 단계는 버전과 무관하게 동작하고 읽기도 쉽다.
+> DB를 두 번 오가지만 학습용 규모에서는 차이가 없고, `$inc`의 원자성은 그대로 유지된다.
 
 ---
 
