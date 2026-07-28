@@ -1,9 +1,18 @@
 // Task 3에서 삭제할 임시 파일.
-// api/ 폴더에 파일을 두면 Vercel이 자동으로 API 주소를 만들어준다는 것을
-// 확인하기 위한 용도다. 이 파일은 /api/hello 주소가 된다.
-export default function handler(req, res) {
-  res.status(200).json({
-    message: '서버리스 함수가 동작합니다',
-    method: req.method,
-  });
+// 서버리스 함수와 MongoDB 연결이 모두 동작하는지 확인하는 용도다.
+import { getPostsCollection } from '../lib/db.js';
+
+export default async function handler(req, res) {
+  try {
+    const col = await getPostsCollection();
+    const count = await col.countDocuments();
+
+    res.status(200).json({
+      message: '서버리스 함수와 DB 연결이 모두 동작합니다',
+      postCount: count,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+  }
 }
