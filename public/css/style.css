@@ -122,3 +122,67 @@ h1 {
   border-color: #2b6cb0;
   color: #fff;
 }
+
+.form {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  padding: 24px;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #2b6cb0;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.hint {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #888;
+}
+
+.error {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: 4px;
+  background: #fdecec;
+  color: #c0392b;
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.readonly-value {
+  padding: 10px 0;
+  color: #555;
+}

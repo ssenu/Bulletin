@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>글쓰기 - 자유게시판</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="container">
+    <header class="page-header">
+      <h1>글쓰기</h1>
+    </header>
+
+    <form id="post-form" class="form" novalidate>
+      <div class="field">
+        <label for="title">제목</label>
+        <input type="text" id="title" maxlength="100" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="author">작성자</label>
+        <input type="text" id="author" maxlength="20" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" autocomplete="new-password">
+        <p class="hint">수정·삭제할 때 필요합니다. 4자 이상.</p>
+      </div>
+
+      <div class="field">
+        <label for="content">내용</label>
+        <textarea id="content" rows="12" maxlength="5000"></textarea>
+      </div>
+
+      <p id="error" class="error" hidden></p>
+
+      <div class="form-actions">
+        <a class="btn" href="index.html">취소</a>
+        <button type="submit" id="submit" class="btn btn-primary">등록</button>
+      </div>
+    </form>
+  </main>
+
+  <script type="module" src="js/write.js"></script>
+</body>
+</html>
