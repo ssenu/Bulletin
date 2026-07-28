@@ -410,7 +410,13 @@ if (!uri) {
 let clientPromise = globalThis._mongoClientPromise;
 
 if (!clientPromise) {
-  clientPromise = new MongoClient(uri).connect();
+  clientPromise = new MongoClient(uri).connect().catch((err) => {
+    // 실패한 연결은 캐시에서 지운다.
+    // 지우지 않으면 실패한 Promise가 계속 재사용되어, 원인을 고친 뒤에도
+    // 이 인스턴스가 사라질 때까지 모든 요청이 같은 에러를 낸다.
+    globalThis._mongoClientPromise = undefined;
+    throw err;
+  });
   globalThis._mongoClientPromise = clientPromise;
 }
 
@@ -423,6 +429,8 @@ export async function getPostsCollection() {
   return client.db('board').collection('posts');
 }
 ```
+
+`.catch`가 있는 이유: 실패한 연결이 캐시에 남으면 안 되기 때문이다. 원인(예: 비밀번호 오타)을 고쳐도 이 인스턴스가 살아있는 동안 계속 같은 에러가 재사용된다.
 
 ---
 
