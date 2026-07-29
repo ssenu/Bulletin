@@ -30,7 +30,7 @@ async function listPosts(req, res) {
 
   const posts = await col
     .find({}, { projection: { content: 0, passwordHash: 0 } })
-    .sort({ createdAt: -1 })
+    .sort({ createdAt: -1, _id: -1 })  // 같은 시각의 글도 순서가 흔들리지 않게 _id로 한 번 더 정렬
     .skip(skip)
     .limit(PER_PAGE)
     .toArray();

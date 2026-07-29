@@ -74,6 +74,12 @@ async function updatePost(req, res, _id) {
     return res.status(404).json({ error: '존재하지 않는 글입니다' });
   }
 
+  // Atlas UI에서 손으로 넣은 문서처럼 passwordHash가 없는 글이 있을 수 있다.
+  // 그대로 bcrypt.compare에 넘기면 500이 난다. 비밀번호가 없는 글은 수정·삭제할 수 없다.
+  if (!post.passwordHash) {
+    return res.status(401).json({ error: '비밀번호가 일치하지 않습니다' });
+  }
+
   // bcrypt.compare는 입력값을 같은 방식으로 해시해서 비교한다.
   // 저장된 해시를 원문으로 되돌리는 것이 아니다. 해시는 되돌릴 수 없다.
   const matched = await bcrypt.compare(value.password, post.passwordHash);
@@ -104,6 +110,12 @@ async function deletePost(req, res, _id) {
   const post = await col.findOne({ _id }, { projection: { passwordHash: 1 } });
   if (!post) {
     return res.status(404).json({ error: '존재하지 않는 글입니다' });
+  }
+
+  // Atlas UI에서 손으로 넣은 문서처럼 passwordHash가 없는 글이 있을 수 있다.
+  // 그대로 bcrypt.compare에 넘기면 500이 난다. 비밀번호가 없는 글은 수정·삭제할 수 없다.
+  if (!post.passwordHash) {
+    return res.status(401).json({ error: '비밀번호가 일치하지 않습니다' });
   }
 
   const matched = await bcrypt.compare(password, post.passwordHash);
