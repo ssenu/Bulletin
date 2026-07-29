@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>글 보기 - 자유게시판</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="container">
+    <p id="status" class="status">불러오는 중...</p>
+
+    <article id="post" class="post" hidden>
+      <h1 id="post-title" class="post-title"></h1>
+      <p id="post-meta" class="post-meta"></p>
+      <div id="post-content" class="post-content"></div>
+    </article>
+
+    <div id="actions" class="post-actions" hidden>
+      <a class="btn" href="index.html">목록</a>
+      <span class="spacer"></span>
+      <a id="edit-link" class="btn" href="#">수정</a>
+    </div>
+  </main>
+
+  <script type="module" src="js/view.js"></script>
+</body>
+</html>
