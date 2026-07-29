@@ -20,6 +20,15 @@
       <a class="btn" href="index.html">목록</a>
       <span class="spacer"></span>
       <a id="edit-link" class="btn" href="#">수정</a>
+      <button type="button" id="delete-btn" class="btn btn-danger">삭제</button>
+    </div>
+
+    <div id="delete-box" class="delete-box" hidden>
+      <label for="delete-password">비밀번호</label>
+      <input type="password" id="delete-password" autocomplete="current-password">
+      <button type="button" id="delete-confirm" class="btn btn-danger">확인</button>
+      <button type="button" id="delete-cancel" class="btn">취소</button>
+      <p id="delete-error" class="error" hidden></p>
     </div>
   </main>
 

@@ -25,6 +25,9 @@ export default async function handler(req, res) {
     if (req.method === 'PUT') {
       return await updatePost(req, res, _id);
     }
+    if (req.method === 'DELETE') {
+      return await deletePost(req, res, _id);
+    }
     return res.status(405).json({ error: '허용되지 않는 방식입니다' });
   } catch (err) {
     console.error(err);
@@ -85,4 +88,32 @@ async function updatePost(req, res, _id) {
   );
 
   return res.status(200).json({ _id: _id.toString() });
+}
+
+async function deletePost(req, res, _id) {
+  // DELETE 요청도 본문(body)에 비밀번호를 담아 보낸다.
+  // fetch의 DELETE + body 조합은 정상 동작하며,
+  // Vercel의 Node.js 런타임이 Content-Type을 보고 req.body로 파싱해 준다.
+  const password = typeof req.body?.password === 'string' ? req.body.password : '';
+  if (!password) {
+    return res.status(400).json({ error: '비밀번호를 입력해주세요' });
+  }
+
+  const col = await getPostsCollection();
+
+  const post = await col.findOne({ _id }, { projection: { passwordHash: 1 } });
+  if (!post) {
+    return res.status(404).json({ error: '존재하지 않는 글입니다' });
+  }
+
+  const matched = await bcrypt.compare(password, post.passwordHash);
+  if (!matched) {
+    return res.status(401).json({ error: '비밀번호가 일치하지 않습니다' });
+  }
+
+  await col.deleteOne({ _id });
+
+  // 204 No Content — 성공했고 돌려줄 본문이 없다는 뜻.
+  // .json()이 아니라 .end()를 쓴다.
+  return res.status(204).end();
 }
