@@ -78,6 +78,11 @@ async function load() {
   try {
     const data = await getPosts(page);
 
+    // 페이지 버튼은 글이 없는 페이지(범위 밖 page=99 등)에서도 그려야
+    // 사용자가 목록으로 돌아갈 수 있다. 그래서 빈 목록으로 돌아가는
+    // 경우에도 renderPagination을 먼저 실행하고, 그 다음에 안내 문구를 보여준다.
+    renderPagination(data.currentPage, data.totalPages);
+
     if (data.posts.length === 0) {
       showStatus('등록된 글이 없습니다');
       return;
@@ -85,7 +90,6 @@ async function load() {
 
     hideStatus();
     renderRows(data.posts, data.totalCount, data.currentPage);
-    renderPagination(data.currentPage, data.totalPages);
   } catch (err) {
     showStatus(err.message);
   }

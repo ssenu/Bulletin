@@ -2640,7 +2640,9 @@ try {
     passwordHash,
     views: 0,
     // 1분씩 차이를 둬서 정렬 순서를 확인할 수 있게 한다.
-    createdAt: new Date(now + i * 60000),
+    // 모두 과거 시각이어야 한다. 미래로 잡으면 이 다음에 사용자가 쓴 진짜 글이
+    // 목록에서 더미 글 아래로 밀려 "새 글이 맨 위에 보임" 확인이 실패한다.
+    createdAt: new Date(now - (COUNT - 1 - i) * 60000),
   }));
 
   const result = await col.insertMany(docs);

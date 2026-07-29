@@ -35,6 +35,12 @@ async function request(url, options = {}) {
     throw new Error(data?.error || '요청을 처리하지 못했습니다');
   }
 
+  // 2xx인데 본문이 JSON이 아닌 경우. 정상 응답이라면 여기 올 수 없다.
+  // 그대로 null을 돌려주면 호출한 쪽에서 영어 TypeError가 나므로 여기서 막는다.
+  if (data === null) {
+    throw new Error('요청을 처리하지 못했습니다');
+  }
+
   return data;
 }
 
@@ -42,11 +48,13 @@ export function getPosts(page = 1) {
   return request('/api/posts?page=' + page);
 }
 
+// id는 주소창(location.search)에서 그대로 오므로 경로에 안전하다고 믿을 수 없다.
+// encodeURIComponent로 감싸서 '/', '..' 같은 문자가 경로 구분자로 해석되지 않게 한다.
 export function getPost(id, countView = false) {
   // countView가 true일 때만 조회수가 오른다.
   // 수정 화면에서 글을 불러올 때는 조회수가 오르면 안 된다.
   const query = countView ? '?countView=1' : '';
-  return request('/api/posts/' + id + query);
+  return request('/api/posts/' + encodeURIComponent(id) + query);
 }
 
 export function createPost(data) {
@@ -58,7 +66,7 @@ export function createPost(data) {
 }
 
 export function updatePost(id, data) {
-  return request('/api/posts/' + id, {
+  return request('/api/posts/' + encodeURIComponent(id), {
     method: 'PUT',
     headers: jsonHeaders,
     body: JSON.stringify(data),
@@ -66,7 +74,7 @@ export function updatePost(id, data) {
 }
 
 export function deletePost(id, password) {
-  return request('/api/posts/' + id, {
+  return request('/api/posts/' + encodeURIComponent(id), {
     method: 'DELETE',
     headers: jsonHeaders,
     body: JSON.stringify({ password }),

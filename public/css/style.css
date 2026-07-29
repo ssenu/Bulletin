@@ -2,6 +2,14 @@
   box-sizing: border-box;
 }
 
+/* hidden 속성이 항상 이기게 한다.
+   .post-actions 나 .delete-box 처럼 display 를 지정한 요소는
+   브라우저 기본 규칙([hidden]{display:none})을 덮어써서
+   hidden 을 걸어도 화면에 그대로 보인다. */
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
