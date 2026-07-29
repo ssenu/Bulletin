@@ -1,0 +1,53 @@
+import { ObjectId } from 'mongodb';
+import { getPostsCollection } from '../../lib/db.js';
+
+export default async function handler(req, res) {
+  try {
+    // 파일명이 [id].js이므로 주소의 그 자리 값이 req.query.id로 들어온다.
+    const { id } = req.query;
+
+    // 형식 검사를 먼저 한다.
+    // 이걸 빼면 new ObjectId('hello')가 예외를 던져 500이 난다.
+    // 500은 "서버가 잘못했다"는 뜻인데 실제로는 요청이 잘못된 것이므로 400이 맞다.
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: '잘못된 요청입니다' });
+    }
+
+    // 문자열을 ObjectId 타입으로 바꾼다.
+    // 이걸 빼먹으면 "분명 있는 글인데 못 찾는" 현상이 생긴다.
+    const _id = new ObjectId(id);
+
+    if (req.method === 'GET') {
+      return await getPost(req, res, _id);
+    }
+    return res.status(405).json({ error: '허용되지 않는 방식입니다' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: '서버 오류가 발생했습니다' });
+  }
+}
+
+async function getPost(req, res, _id) {
+  const col = await getPostsCollection();
+
+  // countView=1일 때만 조회수를 올린다.
+  // 수정 화면(edit.html)도 같은 API로 글을 불러오는데,
+  // 수정하려고 열었을 때 조회수가 오르면 안 되기 때문이다.
+  //
+  // $inc는 "지금 값이 뭐든 1을 더해라"라는 뜻이다.
+  // 값을 읽어와서 +1 하고 다시 저장하면 동시에 두 명이 들어왔을 때
+  // 하나가 씹힌다. $inc는 DB가 한 번에 처리해서 그런 문제가 없다.
+  if (req.query.countView === '1') {
+    const result = await col.updateOne({ _id }, { $inc: { views: 1 } });
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: '존재하지 않는 글입니다' });
+    }
+  }
+
+  const post = await col.findOne({ _id }, { projection: { passwordHash: 0 } });
+  if (!post) {
+    return res.status(404).json({ error: '존재하지 않는 글입니다' });
+  }
+
+  return res.status(200).json(post);
+}
