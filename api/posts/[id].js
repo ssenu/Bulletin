@@ -1,5 +1,7 @@
+import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import { getPostsCollection } from '../../lib/db.js';
+import { validateUpdate } from '../../lib/validate.js';
 
 export default async function handler(req, res) {
   try {
@@ -19,6 +21,9 @@ export default async function handler(req, res) {
 
     if (req.method === 'GET') {
       return await getPost(req, res, _id);
+    }
+    if (req.method === 'PUT') {
+      return await updatePost(req, res, _id);
     }
     return res.status(405).json({ error: '허용되지 않는 방식입니다' });
   } catch (err) {
@@ -50,4 +55,34 @@ async function getPost(req, res, _id) {
   }
 
   return res.status(200).json(post);
+}
+
+async function updatePost(req, res, _id) {
+  const { error, value } = validateUpdate(req.body);
+  if (error) {
+    return res.status(400).json({ error });
+  }
+
+  const col = await getPostsCollection();
+
+  // 비밀번호 확인을 위해 해시만 가져온다.
+  const post = await col.findOne({ _id }, { projection: { passwordHash: 1 } });
+  if (!post) {
+    return res.status(404).json({ error: '존재하지 않는 글입니다' });
+  }
+
+  // bcrypt.compare는 입력값을 같은 방식으로 해시해서 비교한다.
+  // 저장된 해시를 원문으로 되돌리는 것이 아니다. 해시는 되돌릴 수 없다.
+  const matched = await bcrypt.compare(value.password, post.passwordHash);
+  if (!matched) {
+    return res.status(401).json({ error: '비밀번호가 일치하지 않습니다' });
+  }
+
+  // author와 createdAt은 건드리지 않는다. 작성자가 바뀌면 안 된다.
+  await col.updateOne(
+    { _id },
+    { $set: { title: value.title, content: value.content } }
+  );
+
+  return res.status(200).json({ _id: _id.toString() });
 }
